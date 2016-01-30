@@ -1,45 +1,62 @@
-function newCharacter(path, x, y)
+function newObject(path, x, y, class)
     local x = x or 0
     local y = y or 0
+    local class = class or "static"
 
-    local character = {
-        relative_position = {
+    local object = {}
+
+    object.class = class
+    object.image = love.graphics.newImage(path)
+
+    if class == "static" then
+        object.position = {
+            x = love.graphics.getWidth()/2 + x,
+            y = love.graphics.getHeight() - object.image:getHeight() - y  -- -300
+        }
+    elseif class == "player" then
+        object.relative_position = {
             x = x,
             y = y
-        },
-        movement = {
+        }
+        object.movement = {
             x_p = 0,
             x_n = 0
-        },
-        animation = {
-            running = false
-        },
-        image = love.graphics.newImage(path)
-    }
-    character.position = function()
-        return {
-            x = love.graphics.getWidth()/2 + character.relative_position.x,
-            y = love.graphics.getHeight() - character.image:getHeight() - character.relative_position.y  -- -300
         }
-
+        object.animation = {
+            running = false
+        }
+        object.position = function()
+            return {
+                x = love.graphics.getWidth()/2 + object.relative_position.x,
+                y = love.graphics.getHeight() - object.image:getHeight() - object.relative_position.y  -- -300
+            }
+        end
     end
-    return character
+
+    return object
 end
 function fall_animation(t, v, h, k)
     local h = h or 0
-    local k = k or 20
+    local k = k or 25
 
     return h + v * t - k * 9.8 * t^2
 end
 function love.load()
-    dude = newCharacter("assets/dude.png")
-
+    -- Object creation
+    dude = newObject("assets/dude.png", 0, 0, "player")
+    caca = newObject("assets/caca.png", love.math.random(-9, 9), 0)
     plants = {}
     for i=1, love.graphics.getWidth()/10 do
-        table.insert(plants, newCharacter("assets/plant.png", love.math.random(-love.graphics.getWidth()/2, love.graphics.getWidth()/2)))
+        table.insert(plants, newObject("assets/plant.png", love.math.random(-love.graphics.getWidth()/2, love.graphics.getWidth()/2)))
     end
 
-    all = { plants, dude }
+    -- Object assignment
+    all = {}
+    for i=1,#plants do
+        table.insert(all, plants[i])
+    end
+    table.insert(all, dude)
+    table.insert(all, caca)
 end
 function love.update()
     if dude.animation.running == true then
@@ -56,11 +73,9 @@ function love.update()
 end
 function love.draw()
     for i=1,#all do
-        if all[i].image == nil then
-            for j=1,#all[i] do
-                love.graphics.draw(all[i][j].image, all[i][j].position().x, all[i][j].position().y)
-            end
-        else
+        if all[i].class == "static" then
+            love.graphics.draw(all[i].image, all[i].position.x, all[i].position.y)
+        elseif all[i].class == "player" then
             love.graphics.draw(all[i].image, all[i].position().x, all[i].position().y)
         end
     end
