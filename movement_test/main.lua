@@ -43,7 +43,7 @@ function fall_animation(t, v, h, k)
 end
 function love.load()
     -- Object creation
-    dude = newObject("assets/dude.png", 0, 0, "player")
+    player = newObject("assets/player.png", 0, 0, "player")
     caca = newObject("assets/caca.png", love.math.random(-9, 9), 0)
     plants = {}
     for i=1, love.graphics.getWidth()/10 do
@@ -55,21 +55,21 @@ function love.load()
     for i=1,#plants do
         table.insert(all, plants[i])
     end
-    table.insert(all, dude)
+    table.insert(all, player)
     table.insert(all, caca)
 end
 function love.update()
-    if dude.animation.running == true then
-        dude.animation.now = love.timer.getTime()
-        dude.animation.interval = dude.animation.now - dude.animation.start
-        dude.relative_position.y = fall_animation(dude.animation.interval, 150)
-        if dude.relative_position.y <= 0 then
-            dude.animation.running = false
-            dude.relative_position.y = 0
+    if player.animation.running == true then
+        player.animation.now = love.timer.getTime()
+        player.animation.interval = player.animation.now - player.animation.start
+        player.relative_position.y = fall_animation(player.animation.interval, 150)
+        if player.relative_position.y <= 0 then
+            player.animation.running = false
+            player.relative_position.y = 0
         end
     end
-    dude.relative_position.x = dude.relative_position.x + dude.movement.x_p - dude.movement.x_n
-    dude.relative_position.y = math.floor(dude.relative_position.y)
+    player.relative_position.x = player.relative_position.x + player.movement.x_p - player.movement.x_n
+    player.relative_position.y = math.floor(player.relative_position.y)
 end
 function love.draw()
     for i=1,#all do
@@ -82,24 +82,24 @@ function love.draw()
 end
 function love.keypressed(key)
     if key == "space" then
-        if dude.animation.running == false then
-            dude.animation = {}
-            dude.animation.running = true
-            dude.animation.start = love.timer.getTime()
+        if player.animation.running == false then
+            player.animation = {}
+            player.animation.running = true
+            player.animation.start = love.timer.getTime()
         end
     elseif key == "a" then
-        dude.movement.x_n = 2
---      if dude.animation.running == true then      -- When I can make this to
---          dude.movement.x_n = 0.75                -- reset when it falls to
+        player.movement.x_n = 2
+--      if player.animation.running == true then      -- When I can make this to
+--          player.movement.x_n = 0.75                -- reset when it falls to
 --      else                                        -- the ground, I will
---          dude.movement.x_n = 2                   -- implement it.
+--          player.movement.x_n = 2                   -- implement it.
 --      end
     elseif key == "d" then
-        dude.movement.x_p = 2
---      if dude.animation.running == true then
---          dude.movement.x_p = 0.75
+        player.movement.x_p = 2
+--      if player.animation.running == true then
+--          player.movement.x_p = 0.75
 --      else
---          dude.movement.x_p = 2
+--          player.movement.x_p = 2
 --      end
     elseif key == "escape" then
         love.event.push("quit")
@@ -107,8 +107,8 @@ function love.keypressed(key)
 end
 function love.keyreleased(key)
     if key == "a" then
-        dude.movement.x_n = 0
+        player.movement.x_n = 0
     elseif key == "d" then
-        dude.movement.x_p = 0
+        player.movement.x_p = 0
     end
 end
