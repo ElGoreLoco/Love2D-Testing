@@ -23,7 +23,12 @@ function newObject(path, x, y, class)
             x_n = 0
         }
         object.animation = {
-            running = false
+            jumping = {
+                running = false
+            },
+            walking = {
+                running = false
+            }
         }
         object.position = function()
             return {
@@ -59,15 +64,19 @@ function love.load()
     table.insert(all, caca)
 end
 function love.update()
-    if player.animation.running == true then
-        player.animation.now = love.timer.getTime()
-        player.animation.interval = player.animation.now - player.animation.start
-        player.relative_position.y = fall_animation(player.animation.interval, 150)
+    -- ANIMATIONS
+    --- Jump
+    if player.animation.jumping.running == true then
+        player.animation.jumping.now = love.timer.getTime()
+        player.animation.jumping.interval = player.animation.jumping.now - player.animation.jumping.start
+        player.relative_position.y = fall_animation(player.animation.jumping.interval, 150)
         if player.relative_position.y <= 0 then
-            player.animation.running = false
+            player.animation.jumping.running = false
             player.relative_position.y = 0
         end
     end
+
+    -- Set position of player
     player.relative_position.x = player.relative_position.x + player.movement.x_p - player.movement.x_n
     player.relative_position.y = math.floor(player.relative_position.y)
 end
@@ -82,21 +91,20 @@ function love.draw()
 end
 function love.keypressed(key)
     if key == "space" then
-        if player.animation.running == false then
-            player.animation = {}
-            player.animation.running = true
-            player.animation.start = love.timer.getTime()
+        if player.animation.jumping.running == false then
+            player.animation.jumping.running = true
+            player.animation.jumping.start = love.timer.getTime()
         end
     elseif key == "a" then
         player.movement.x_n = 2
---      if player.animation.running == true then      -- When I can make this to
+--      if player.animation.jumping.running == true then      -- When I can make this to
 --          player.movement.x_n = 0.75                -- reset when it falls to
 --      else                                        -- the ground, I will
 --          player.movement.x_n = 2                   -- implement it.
 --      end
     elseif key == "d" then
         player.movement.x_p = 2
---      if player.animation.running == true then
+--      if player.animation.jumping.running == true then
 --          player.movement.x_p = 0.75
 --      else
 --          player.movement.x_p = 2
